@@ -41,31 +41,33 @@ const Login = (props) => {
     isValid: null,
   });
 
-  // useEffect(() => {
-  //   const identifier = setTimeout(() => {
-  //     console.log('checkong ...')
-  //     setFormIsValid(
-  //       enteredEmail.includes('@') && enteredPassword.trim().length > 6
-  //     );
-  //   }, 500);
-  //   return () => { // this function wil run before above function
-  //     console.log('clean');
-  //     clearTimeout(identifier);
-  //   };
-  // },[enteredEmail, enteredPassword])
+  const {isValid: emailIsValid } = emailState; //prevent from re run the effect when props change to many times
+  const {isValid: passwordIsValid} = passwordState ;
+  useEffect(() => {
+    const identifier = setTimeout(() => {
+      console.log('checking ...')
+      setFormIsValid(
+        emailState.isValid && passwordState.isValid
+      );
+    }, 500);
+    return () => { // this function wil run before above function
+      console.log('clean');
+      clearTimeout(identifier);
+    };
+  },[emailIsValid, passwordIsValid])
 
   const emailChangeHandler = (event) => {
     dispatchEmail({type: 'USER_INPUT', val: event.target.value});
-    setFormIsValid(
-      emailState.isValid && passwordState.isValid 
-    );
+    // setFormIsValid(
+    //   emailState.isValid && passwordState.isValid 
+    // );
   };
 
   const passwordChangeHandler = (event) => {
     dispatchPassword({type: 'PASSWORD_INPUT', val: event.target.value});
-    setFormIsValid(
-      emailState.isValid && passwordState.isValid
-    );
+    // setFormIsValid(
+    //   emailState.isValid && passwordState.isValid
+    // );
   };
 
   const validateEmailHandler = () => {
@@ -124,3 +126,27 @@ const Login = (props) => {
 };
 
 export default Login;
+
+// const { someProperty } = someObject;
+// useEffect(() => {
+//   // code that only uses someProperty ...
+// }, [someProperty]);
+
+
+// useEffect(() => {
+//   // code that only uses someProperty ...
+// }, [someObject.someProperty]);
+
+// ===> can you either of above blocks of code
+
+//AVOID THIS
+
+// useEffect(() => {
+//   // code that only uses someProperty ...
+// }, [someObject]);
+// Why?
+
+// Because now the effect function would re-run whenever 
+// ANY property of someObject changes - not just the one 
+// property (someProperty in the above example) 
+// our effect might depend on.
